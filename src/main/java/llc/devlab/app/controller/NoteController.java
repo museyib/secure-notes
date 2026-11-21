@@ -1,6 +1,7 @@
 package llc.devlab.app.controller;
 
 import jakarta.validation.Valid;
+import llc.devlab.app.model.dto.NoteRevokeRequest;
 import llc.devlab.app.model.dto.NoteDto;
 import llc.devlab.app.model.dto.NoteRequest;
 import llc.devlab.app.model.dto.NoteShareRequest;
@@ -68,8 +69,8 @@ public class NoteController {
     @PostMapping("/{id}/revoke")
     @PreAuthorize("@resourceSecurity.isOwner(#id, authentication.principal.username)")
     public ResponseEntity<Void> revokeNoteShareAccess(@PathVariable long id,
-                                                       @RequestBody NoteShareRequest request,
-                                                       @AuthenticationPrincipal UserDetails userDetails) {
+                                                      @Valid @RequestBody NoteRevokeRequest request,
+                                                      @AuthenticationPrincipal UserDetails userDetails) {
         noteService.revokeNoteShareAccess(id, userDetails.getUsername(), request.sharedUserEmail());
         return ResponseEntity.noContent().build();
     }
