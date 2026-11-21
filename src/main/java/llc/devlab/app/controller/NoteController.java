@@ -68,7 +68,7 @@ public class NoteController {
     @PostMapping("/{id}/revoke")
     @PreAuthorize("@resourceSecurity.isOwner(#id, authentication.principal.username)")
     public ResponseEntity<Void> revokeNoteShareAccess(@PathVariable long id,
-                                                       @Valid @RequestBody NoteShareRequest request,
+                                                       @RequestBody NoteShareRequest request,
                                                        @AuthenticationPrincipal UserDetails userDetails) {
         noteService.revokeNoteShareAccess(id, userDetails.getUsername(), request.sharedUserEmail());
         return ResponseEntity.noContent().build();

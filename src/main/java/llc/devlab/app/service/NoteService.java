@@ -1,6 +1,9 @@
 package llc.devlab.app.service;
 
 import jakarta.transaction.Transactional;
+import llc.devlab.app.audit.AuditAction;
+import llc.devlab.app.audit.Auditable;
+import llc.devlab.app.audit.RiskLevel;
 import llc.devlab.app.exception.ConflictException;
 import llc.devlab.app.model.dto.NoteDto;
 import llc.devlab.app.model.dto.NoteRequest;
@@ -64,12 +67,14 @@ public class NoteService {
     }
 
     @Transactional
+    @Auditable(targetId = "#id", targetType = "Note", riskLevel = RiskLevel.HIGH, action = AuditAction.DELETE)
     public void deleteNote(Long id) {
         Note note = getNoteByIdAndUsername(id);
         note.setDeleted(true);
     }
 
     @Transactional
+    @Auditable(targetId = "#id", targetType = "Note", riskLevel = RiskLevel.MEDIUM, action = AuditAction.SHARE)
     public void shareNote(Long id, String ownerEmail, NoteShareRequest request) {
         if (ownerEmail.equals(request.sharedUserEmail()))
             throw new ConflictException("Owner cannot revoke access to themselves");
@@ -87,6 +92,7 @@ public class NoteService {
     }
 
     @Transactional
+    @Auditable(targetId = "#id", targetType = "Note", riskLevel = RiskLevel.LOW, action = AuditAction.REVOKE)
     public void revokeNoteShareAccess(Long id, String ownerEmail, String sharedUserEmail) {
         if (ownerEmail.equals(sharedUserEmail))
             throw new ConflictException("Owner cannot revoke access to themselves");
